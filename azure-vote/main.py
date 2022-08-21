@@ -27,11 +27,15 @@ stats = stats_module.stats
 view_manager = stats.view_manager
 
 # Logging
+config_integration.trace_integrations(['logging'])
+config_integration.trace_integrations(['requests'])
 logger = logging.getLogger(__name__)# TODO: Setup logger
+
 handler = AzureLogHandler(connection_string='InstrumentationKey=b455aa72-b823-43a4-b7d6-e012cafea01f')
-#handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
+handler.setFormatter(logging.Formatter('%(traceId)s %(spanId)s %(message)s'))
 logger.addHandler(handler)
 # Set the logging level
+logger.addHandler(AzureEventHandler(connection_string='InstrumentationKey=b455aa72-b823-43a4-b7d6-e012cafea01f'))
 logger.setLevel(logging.INFO)
 
 
@@ -133,13 +137,20 @@ def index():
 
             # Get current values
             vote1 = r.get(button1).decode('utf-8')
+            properties = {'custom_dimensions': {'Cats Vote': vote1}}
+            # TODO: use logger object to log cat vote
+            logger.info('Cats Vote', extra=properties)
+
             vote2 = r.get(button2).decode('utf-8')
+            properties = {'custom_dimensions': {'Dogs Vote': vote2}}
+            # TODO: use logger object to log dog vote
+            logger.info('Dogs Vote', extra=properties)
 
             # Return results
             return render_template("index.html", value1=int(vote1), value2=int(vote2), button1=button1, button2=button2, title=title)
 
 if __name__ == "__main__":
     # TODO: Use the statement below when running locally
-    #app.run() 
+    app.run() 
     # TODO: Use the statement below before deployment to VMSS
-    app.run(host='0.0.0.0', threaded=True, debug=True) # remote
+    #app.run(host='0.0.0.0', threaded=True, debug=True) # remote
