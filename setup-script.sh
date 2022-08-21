@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Variables
-resourceGroup="acdnd-c4-project"
-location="westus"
+resourceGroup="udacity-applicationmonitoring"
+location="westeurope"
 osType="UbuntuLTS"
 vmssName="udacity-vmss"
 adminName="udacityadmin"
@@ -146,3 +146,6 @@ az network nsg rule create \
 echo "Port 22 added to NSG: $nsgName"
 
 echo "VMSS script completed!"
+
+echo "List the connection information of the VMSS instances"
+az vmss list-instance-connection-info --resource-group $resourceGroup --name $vmssName
